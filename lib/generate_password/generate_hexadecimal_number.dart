@@ -4,7 +4,7 @@ class GenerateHexadecimalNumber {
 
     String generateHexadecimalNumber() {
         final randomNumberGenerator = GenerateRandomNumber();
-        final randomNumber = randomNumberGenerator.generate();
+        final randomNumber = 100 + randomNumberGenerator.generate();
         final hexadecimalValue = randomNumber.toRadixString(16).toUpperCase();
         return hexadecimalValue;
 }
