@@ -53,7 +53,7 @@ class _PasswordScreenState extends State<Screen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Ben-Vidos ao seu melhor gerador de senhas!',
+              'Bem-Vindos ao seu melhor gerador de senhas!',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
