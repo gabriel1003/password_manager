@@ -1,17 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:password_manager/generate_password/password.dart';
 
 class Screen extends StatefulWidget {
-  const Screen({super.key});
-
   @override
-  State<Screen> createState() => _PasswordScreenState();
+  _ScreenPasswordState createState() => _ScreenPasswordState();
 }
 
-class _PasswordScreenState extends State<Screen> {
+class _ScreenPasswordState extends State<Screen> {
+  final FocusNode _copyButtonFocusNode = FocusNode();
   String _generatedPassword = '';
-  final Password _generatorPassword = Password();
+  final Password _passwordGenerator = Password();
 
   @override
   void initState() {
@@ -19,75 +19,84 @@ class _PasswordScreenState extends State<Screen> {
     _generateNewPassword();
   }
 
+  @override
+  void dispose() {
+    _copyButtonFocusNode.dispose();
+    super.dispose();
+  }
+
   void _generateNewPassword() {
     setState(() {
-      _generatedPassword = _generatorPassword.generatePassword();
+      _generatedPassword = _passwordGenerator.generatePassword();
     });
   }
 
-  void _copyToClipboard() {
+  void _copytoClipboard() {
     if (_generatedPassword.isNotEmpty) {
-      Clipboard.setData(ClipboardData(text: _generatedPassword));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Senha copiada para a área de transferência!'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      Clipboard.setData(ClipboardData(text: _generatedPassword)).then((_) {
+        showCupertinoDialog(
+          context: context,
+          builder: (context) => CupertinoAlertDialog(
+            title: const Text('Sucesso'),
+            content: const Text('Senha copiada para a área de transferência'),
+            actions: <CupertinoDialogAction>[
+              CupertinoDialogAction(
+                child: const Text('ok'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+          ],
+          ),
+        );
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gerador de senhas'),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
+    return CupertinoPageScaffold(
+      navigationBar: const CupertinoNavigationBar(
+        middle: Text('Gerador de senhas'),
       ),
-    body: Padding(
-      padding: const EdgeInsets.all(20.0),
       child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Bem-Vindos ao seu melhor gerador de senhas!',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 30),
-            const Text(
-              'Esta é a sua senha: ',
-              style: TextStyle(fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            SelectableText(
-              _generatedPassword,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'monospace',
-                letterSpacing: 1.5,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30.0),
+                child: Text(
+                  'Olá sejá bem-vindo ao seu gerador de senhas',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: CupertinoColors.systemGrey.resolveFrom(context),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.copy),
-              label: const Text('Copiar senha'),
-              onPressed: _copyToClipboard,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                textStyle: const TextStyle(fontSize: 16),
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-              ),)
-          ],
-        ),
-      ),),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30.0),
+                child: SelectableText(
+                  _generatedPassword.isEmpty ? 'Sua senha aparecera aqui' : _generatedPassword,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: CupertinoColors.label.resolveFrom(context),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                ),
+                CupertinoButton.filled(
+                  focusNode: _copyButtonFocusNode,
+                  child: const Text('copiar senha'),
+                  onPressed: _generatedPassword.isEmpty ? null : _copytoClipboard,
+                ),
+            ],
+          ),
+          ),
+      ),
     );
   }
 }

@@ -1,0 +1,6 @@
+[31mERROR: lib/main.dart:15:13: Error: Cannot invoke a non-'const' constructor where a const expression is expected.[39m
+[31mERROR: Try using a constructor or factory that is 'const'.[39m
+[31mERROR:       home: Screen(),[39m
+[31mERROR:             ^^^^^^[39m
+[31mERROR: Target kernel_snapshot_program failed: Exception[39m
+[31mError: Build process failed[39m
